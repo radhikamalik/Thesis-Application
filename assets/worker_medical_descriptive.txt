@@ -1,0 +1,5 @@
+3,no lifting,no kneeling
+5,no bending
+10,no overhead work
+14,no kneeling
+29,no overhead work

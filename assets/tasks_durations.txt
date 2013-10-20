@@ -1,0 +1,10 @@
+task1,4
+task2,4
+task4,8
+task5,6
+task6,2
+task7,4
+task8,8
+task9,8
+task10,8
+task11,4
