@@ -1,13 +1,13 @@
 package hal.taskscheduler.dialogs;
 
+import hal.taskscheduler.R;
+import hal.taskscheduler.listeners.TaskListener.TaskType;
+import hal.taskscheduler.model.RiskCategory;
+import hal.taskscheduler.model.TaskStatus;
+
 import java.text.DecimalFormat;
 import java.util.Map;
 
-import hal.taskscheduler.R;
-import hal.taskscheduler.RiskCategory;
-import hal.taskscheduler.Task;
-import hal.taskscheduler.TaskStatus;
-import hal.taskscheduler.listeners.TaskListener.TaskType;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;

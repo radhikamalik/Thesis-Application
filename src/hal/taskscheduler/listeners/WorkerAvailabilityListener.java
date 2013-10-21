@@ -1,8 +1,8 @@
 package hal.taskscheduler.listeners;
 
-import hal.taskscheduler.Worker;
-import hal.taskscheduler.WorkerAvailability;
 import hal.taskscheduler.dialogs.AvailabilityDialog;
+import hal.taskscheduler.model.Worker;
+import hal.taskscheduler.model.WorkerAvailability;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

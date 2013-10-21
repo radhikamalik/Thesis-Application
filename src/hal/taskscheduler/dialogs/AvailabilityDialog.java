@@ -1,7 +1,7 @@
 package hal.taskscheduler.dialogs;
 
 import hal.taskscheduler.R;
-import hal.taskscheduler.WorkerAvailability;
+import hal.taskscheduler.model.WorkerAvailability;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;

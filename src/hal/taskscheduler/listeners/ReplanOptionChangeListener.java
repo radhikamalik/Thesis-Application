@@ -1,7 +1,7 @@
 package hal.taskscheduler.listeners;
 
 import hal.taskscheduler.R;
-import hal.taskscheduler.Worker;
+import hal.taskscheduler.model.Worker;
 
 import java.util.Map;
 

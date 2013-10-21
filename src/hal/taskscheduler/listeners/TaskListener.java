@@ -1,10 +1,11 @@
 package hal.taskscheduler.listeners;
 
+import hal.taskscheduler.dialogs.TaskInfoDialog;
+import hal.taskscheduler.model.Task;
+import hal.taskscheduler.model.TaskStatus;
+
 import java.io.Serializable;
 
-import hal.taskscheduler.Task;
-import hal.taskscheduler.TaskStatus;
-import hal.taskscheduler.dialogs.TaskInfoDialog;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;

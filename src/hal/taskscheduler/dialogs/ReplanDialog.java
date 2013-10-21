@@ -1,12 +1,12 @@
 package hal.taskscheduler.dialogs;
 
 import hal.taskscheduler.R;
-import hal.taskscheduler.RiskCategory;
-import hal.taskscheduler.Task;
-import hal.taskscheduler.TaskStatus;
-import hal.taskscheduler.Worker;
 import hal.taskscheduler.listeners.ReplanOptionChangeListener;
 import hal.taskscheduler.listeners.SelectPreferredWorkerListener;
+import hal.taskscheduler.model.RiskCategory;
+import hal.taskscheduler.model.Task;
+import hal.taskscheduler.model.TaskStatus;
+import hal.taskscheduler.model.Worker;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -38,8 +38,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;

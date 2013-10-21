@@ -1,10 +1,9 @@
 package hal.taskscheduler.listeners;
 
-import hal.taskscheduler.Worker;
+import hal.taskscheduler.model.Worker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

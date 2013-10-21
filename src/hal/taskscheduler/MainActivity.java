@@ -1,6 +1,7 @@
 
 package hal.taskscheduler;
 
+import hal.taskscheduler.R;
 import hal.taskscheduler.dialogs.ReplanDialog.ExecuteReplanListener;
 import hal.taskscheduler.listeners.ReplanListener;
 import hal.taskscheduler.listeners.TaskListener;
@@ -8,6 +9,13 @@ import hal.taskscheduler.listeners.TaskListener.TaskType;
 import hal.taskscheduler.listeners.WorkerAvailabilityListener;
 import hal.taskscheduler.listeners.WorkerCertificationListener;
 import hal.taskscheduler.listeners.WorkerMedicalRestrictionListener;
+import hal.taskscheduler.model.Allocator;
+import hal.taskscheduler.model.RiskCategory;
+import hal.taskscheduler.model.Task;
+import hal.taskscheduler.model.TaskStatus;
+import hal.taskscheduler.model.Worker;
+import hal.taskscheduler.model.WorkerAvailability;
+import hal.taskscheduler.model.WorkerType;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -22,12 +30,10 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;

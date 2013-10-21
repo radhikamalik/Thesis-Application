@@ -1,10 +1,11 @@
 package hal.taskscheduler.listeners;
 
+import hal.taskscheduler.dialogs.ReplanDialog;
+import hal.taskscheduler.model.Allocator;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import hal.taskscheduler.Allocator;
-import hal.taskscheduler.dialogs.ReplanDialog;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
