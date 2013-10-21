@@ -8,5 +8,5 @@ accomplished during a shift in their manufacturing operations and re-plan tasks 
 a shift.
 
 There are 2 main components in this project--
-1. A scheduler that solves a constraint satisfaction problem using backtracking search.
-2. An interface prototype for an Android 10" tablet.
+- A scheduler that solves a constraint satisfaction problem using backtracking search.
+- An interface prototype for an Android 10" tablet.
