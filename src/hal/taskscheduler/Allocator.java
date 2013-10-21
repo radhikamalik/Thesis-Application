@@ -4,11 +4,8 @@ package hal.taskscheduler;
 
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,7 +22,17 @@ import java.util.Map;
 import java.util.Set;
 
 import android.content.res.AssetManager;
-
+/**
+ * The Allocator class is the main class that interfaces between the frontend interface and the solver that
+ * implements the scheduling algorithm.
+ * It holds the entire data model for the application.
+ * It is responsible for loading the data, providing methods for the frontend to query the data it needs and to make changes
+ * to the data model, for calling the solver to calculate the new schedule based and then communicating
+ * the results back to the interface.
+ *  
+ * @author RadhikaMalik
+ *
+ */
 
 
 public class Allocator {
@@ -47,18 +54,18 @@ public class Allocator {
 	private Date shiftEndTime;
 	
 	//INPUT DATA FILE NAMES
-	private String shiftTimeFile = "shift_time.txt";
-	private String taskPriorityFile = "task_priorities.txt";
-	private String taskTimesFile = "task_times.txt";
-	private String taskWorkerRequirement = "workers_for_tasks.txt";
-	private String taskRiskProfile = "task_risk_profile.txt";
-	private String workerAvailability = "worker_schedule.txt";
-	private String spareWorkerAvailability = "worker_schedule_spare.txt";
-	private String taskWorkerAssignment = "task_worker_assignment.txt";
-	private String medicalRestrFile = "worker_medical_descriptive.txt";
-	private String workerCerts = "worker_certification.txt";
-	private String taskCerts = "task_certifications.txt";
-	private String taskDependencies = "task_dependencies.txt";
+	private final String shiftTimeFile = "shift_time.txt";
+	private final String taskPriorityFile = "task_priorities.txt";
+	private final String taskTimesFile = "task_times.txt";
+	private final String taskWorkerRequirement = "workers_for_tasks.txt";
+	private final String taskRiskProfile = "task_risk_profile.txt";
+	private final String workerAvailability = "worker_schedule.txt";
+	private final String spareWorkerAvailability = "worker_schedule_spare.txt";
+	private final String taskWorkerAssignment = "task_worker_assignment.txt";
+	private final String medicalRestrFile = "worker_medical_descriptive.txt";
+	private final String workerCerts = "worker_certification.txt";
+	private final String taskCerts = "task_certifications.txt";
+	private final String taskDependencies = "task_dependencies.txt";
 	
 	public Allocator() {
 		workers = new HashMap<Integer, Worker>();
@@ -77,30 +84,11 @@ public class Allocator {
 	public Map<String, Task> getTasks(){
 		return this.tasks;
 	}
-	/*
-	public void loadData(String sourceFolderPath){
-		try {
-			
-			
-				loadShiftTime(new FileInputStream(sourceFolderPath+shiftTimeFile));
-				loadWorkers(new FileInputStream(sourceFolderPath+workerAvailability),this.workers);
-				loadWorkers(new FileInputStream(sourceFolderPath+spareWorkerAvailability), this.workersSpare);
-				loadTasks(new FileInputStream(sourceFolderPath+taskPriorityFile), new FileInputStream(sourceFolderPath+taskTimesFile), new FileInputStream(sourceFolderPath+taskWorkerRequirement),new FileInputStream(sourceFolderPath+taskRiskProfile));
-				loadWorkerTaskAssignments(new FileInputStream(sourceFolderPath+taskWorkerAssignment), this.taskWorkerAssignmentsOriginal);
-				loadWorkerMedicalRestrictions(new FileInputStream(sourceFolderPath+medicalRestrFile));
-				loadWorkerCerts(new FileInputStream(sourceFolderPath+workerCerts));
-				loadTaskCerts(new FileInputStream(sourceFolderPath+taskCerts));
-				loadTaskDependencies(new FileInputStream(sourceFolderPath+taskDependencies));
-				
-				workersAll.putAll(workers);
-				workersAll.putAll(workersSpare);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-
-	}*/
+	/**
+	 * Load all the initial input data. 
+	 * 
+	 * @param sourceFolderPath
+	 */
 	public void loadData(AssetManager am){
 		try {
 			loadShiftTime(am.open(shiftTimeFile));
@@ -121,29 +109,11 @@ public class Allocator {
 			e.printStackTrace();
 		}
 	}
-	/*
-	public void assignWorkersToTasks(
-			Map<String, List<Integer>> initialAssignment) {
-
-		// load initial task assignments
-		// = new HashMap<String,List<Integer>>();
-
-		// String initialAssignmentPath = "Data/initial_task_worker_assignment.txt";
-
-		// loadWorkerTaskAssignments(new FileInputStream(initialAssignmentPath),
-		// initialAssignment);
-
-		// solve!
-		this.populateTaskOverlaps();
-
-		Solver s = new Solver(this.tasks, initialAssignment, workers,
-				constrainedCategories);
-		s.solve();
-		this.taskWorkerAssignmentsSuggested = s.getCurrentBestAssignment();
-		populateWorkerTaskAssignment(this.taskWorkerAssignmentsSuggested,this.workerTaskAssignmentsSuggested);
-
-	}*/
 	
+	/**
+	 * load data related to certifications required for each task.
+	 * @param inputStream
+	 */
 	private void loadTaskCerts(InputStream inputStream) {
 		try {
 
@@ -154,12 +124,8 @@ public class Allocator {
 			String s;
 
 			while ((s = in.readLine()) != null) {
-				String[] task_info_arr = s.split(","); // splitting on comma
-															// gives array
-															// [taskid,
-															// cert1,
-															// cert2,
-															// etc.]
+				// splitting on comma gives array [taskid, cert1, cert2, etc.]
+				String[] task_info_arr = s.split(","); 
 				String taskId = task_info_arr[0];
 
 				Task t = this.getTask(taskId);
@@ -171,7 +137,6 @@ public class Allocator {
 					t.addCertifications(cert);
 					
 				}
-				//System.out.println("task" + taskId + "certs: " + t.getCertifications());
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -185,6 +150,10 @@ public class Allocator {
 		}
 
 	}
+	/**
+	 * Load data on task dependencies.
+	 * @param inputStream
+	 */
 	private void loadTaskDependencies(InputStream inputStream) {
 		try {
 
@@ -195,12 +164,7 @@ public class Allocator {
 			String s;
 
 			while ((s = in.readLine()) != null) {
-				String[] task_info_arr = s.split(","); // splitting on comma
-															// gives array
-															// [taskid,
-															// dep1,
-															// dep2,
-															// etc.]
+				String[] task_info_arr = s.split(","); 
 				String taskId = task_info_arr[0];
 
 				Task t = this.getTask(taskId);
@@ -209,9 +173,7 @@ public class Allocator {
 					String dependency = task_info_arr[i];
 					assert(this.getTask(dependency)!=null);
 					t.addDependency(dependency);
-					
 				}
-				//System.out.println("task" + taskId + "certs: " + t.getCertifications());
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -223,8 +185,12 @@ public class Allocator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
+
+	/**
+	 * Load data on worker certifications
+	 * @param inputStream
+	 */
 	private void loadWorkerCerts(InputStream inputStream) {
 		try {
 
@@ -235,12 +201,8 @@ public class Allocator {
 			String s;
 
 			while ((s = in.readLine()) != null) {
-				String[] worker_info_arr = s.split(","); // splitting on comma
-															// gives array
-															// [workerid,
-															// cert1,
-															// cert2,
-															// etc.]
+				// splitting on comma gives array [workerid, cert1, cert2, etc.]
+				String[] worker_info_arr = s.split(","); 
 				int workerId = Integer.parseInt(worker_info_arr[0]);
 
 				Worker w = this.getWorker(workerId);
@@ -252,8 +214,6 @@ public class Allocator {
 					w.addCertifications(cert);
 					
 				}
-				//System.out.println("worker" + workerId + "certs: " + w.getCertifications());
-
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -267,51 +227,52 @@ public class Allocator {
 		}
 
 	}
-	
-	public void assignWorkersToTasks(Map<String, List<Integer>> preferredWorkers, File file){
-		/*Map<String, List<Integer>> initialAssignment= new HashMap<String,List<Integer>>();
-		String initialAssignmentPath = "Data/initial_task_worker_assignment.txt";
+	/**
+	 * Method that the interface would call to actually compute new worker task assignments.
+	 * The initial worker task assignments would be provided by the frontend. For experiments without 
+	 * involvind the frontend, this method takes in the initial assignments from a text file
+	 * 
+	 */
+	public void assignWorkersToTasks(Map<String, List<Integer>> preferredWorkers){
+		Map<String, List<Integer>> initialAssignment;
+		if (preferredWorkers == null){
+			initialAssignment= new HashMap<String,List<Integer>>();
+			String initialAssignmentPath = "Data/initial_task_worker_assignment.txt";
 
-		try {
-			loadWorkerTaskAssignments(new FileInputStream(initialAssignmentPath),
-			 initialAssignment);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				loadWorkerTaskAssignments(new FileInputStream(initialAssignmentPath),
+						initialAssignment);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			initialAssignment = preferredWorkers;
 		}
-		*/
+
 		// solve!
 		this.populateTaskOverlaps();
+		this.populateCertifiedWorkers();
+		//Toggle the class instance to test outputs for different kinds of solvers
+		SolverInterface s = new SolverMRVHeuristic(this.tasks, initialAssignment, this.workers, null,	constrainedCategories);
+		//Solver s = new Solver(this.tasks, initialAssignment, this.workers, this.workersSpare,	constrainedCategories);
+		//SolverMinSuggested s = new SolverMinSuggested(this.tasks, initialAssignment, this.workers, null,	constrainedCategories);
+		//SolverMinSuggested s = new SolverMinSuggested(this.tasks, initialAssignment, this.workers, this.workersSpare,constrainedCategories);
 		
-
-		Solver s = new Solver(this.tasks, preferredWorkers, workers,
-				constrainedCategories);
-		
-		long begin = System.currentTimeMillis();
-		
+		//uncomment to calculate time for schedulers.
+		//long begin = System.currentTimeMillis();
 		s.solve();
-		
-		long end = System.currentTimeMillis();
-		long diff = end-begin;
-		try {
-			FileWriter fw = new FileWriter(new File(file,"times.txt"));
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write("**********************************************************************: " + Long.toString(diff));
-			bw.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//long end = System.currentTimeMillis();
+		//long diff = end-begin;
 		//System.out.println("**********************************************************************: " + Long.toString(diff));
 		
 		this.taskWorkerAssignmentsSuggested = s.getCurrentBestAssignment();
+		//this.understaffedSuggested = s.getUnderstaffedTasks();
 		populateWorkerTaskAssignment(this.taskWorkerAssignmentsSuggested,this.workerTaskAssignmentsSuggested);
 	}
 	/** 
-	 * Find number of tasks that are completely staffed
+	 * Find number of tasks that are completely staffed in original assignments.
+	 * This method will be called by the frontend controller.
 	 * @return
 	 */
 	public int numOfTasksStaffedOriginal(){
@@ -324,6 +285,11 @@ public class Allocator {
 		}
 		return count;
 	}
+	/** 
+	 * Find number of tasks that are completely staffed in suggested assignments.
+	 * This method will be called by the frontend controller.
+	 * @return
+	 */
 	public int numOfTasksStaffedSuggested(){
 		int count = 0;
 		for (String taskId: tasks.keySet()){
@@ -339,8 +305,6 @@ public class Allocator {
 	 * For each task populate the workers who are skilled to perform given task
 	 */
 	private void populateCertifiedWorkers(){
-		
-
 		for (String tid: this.tasks.keySet()){
 			Task t = this.getTask(tid);
 			Set<Integer> taskCerts = t.getCertifications();
@@ -351,10 +315,7 @@ public class Allocator {
 					t.addCertifiedWorker(workerId);
 				}
 			}
-			//System.out.println("task: " + tid + " certified workers: " + t.getCertifiedWorkers());
-		}
-		
-		
+		}		
 	}
 	
 	/**
@@ -386,8 +347,9 @@ public class Allocator {
 		
 	}
 	/**
-	 * Faster version.
-	 * TODO: benchmark to see performance difference
+	 * Faster version of @populateTaskOverlaps
+	 * O(nlogn) complexity
+	 * TODO: benchmark to see performance difference?
 	 */
 	public void populateTaskOverlapsFaster(){
 		
@@ -405,8 +367,7 @@ public class Allocator {
 		
 		//traverse sorted list and find overlapping intervals
 		
-		//list of task id's currently open
-		Set<String> currentProcessing = new HashSet<String>(); 
+		Set<String> currentProcessing = new HashSet<String>(); //list of task id's currently open
 		
 		for (IntervalValue iv: listStartEndTimes){
 			if (iv.type == 's'){
@@ -422,17 +383,20 @@ public class Allocator {
 			}
 		}
 	}
-	
+	/**
+	 * Load data about shift start time and end time
+	 * @param shiftTimeIs
+	 */
 	private void loadShiftTime(InputStream shiftTimeIs){
 		
 		try {
 			
 			InputStreamReader inputStreamReader = new InputStreamReader(shiftTimeIs);
 			BufferedReader in = new BufferedReader(inputStreamReader);
-			//File f_schedule = new File("Data/");
 			
 			String s = in.readLine();
-			String[] shift_info_arr = s.split(",", -1); // splitting on comma gives array [start-time, end_time]
+			// splitting on comma gives array [start-time, end_time]
+			String[] shift_info_arr = s.split(",", -1); 
 
 			assert (shift_info_arr.length == 2);
 			
@@ -456,7 +420,7 @@ public class Allocator {
 	}
 	
 	/**
-	 * Function to load worker data
+	 * Function to load workers and their start and end times
 	 * @param workerMap 
 	 * 
 	 */
@@ -502,6 +466,11 @@ public class Allocator {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Function to load medical restrictions for workers. Medical restrictions are not 
+	 * featured in the planner yet but are only needed for display on the frontend
+	 * @param workerInputStream
+	 */
 	private void loadWorkerMedicalRestrictions(InputStream workerInputStream) {
 		try {
 			
@@ -534,29 +503,22 @@ public class Allocator {
 	}
 	
 	/**
-	 * Function to load task data
-	 * @param am 
+	 * Function to load task data including times, priorities, worker requirements and risk profiles
+	 * @param priorityIS - input stream of file storing task priorities
+	 * @param timeIS - input stream of file storing task times
+	 * @param workerReqIS - input stream of file storing task worker requirements
+	 * @param riskProfileIS - input stream of file storing task risk profiles
 	 */
 	
 	private void loadTasks(InputStream priorityIS, InputStream timeIS, InputStream workerReqIS, InputStream riskProfileIS) {
-
-		
-
-		try {
-
-			
+		try {	
 			InputStreamReader inputStreamReader = new InputStreamReader(timeIS);
 			BufferedReader in = new BufferedReader(inputStreamReader);
-			
-
 			String s;
-
-			int wid = 1;
-			int count = 0;
 			while ((s = in.readLine()) != null) {
-				String[] task_info_arr = s.split(","); // splitting on comma
+				// splitting on comma
 				// gives array of task, start-time, end_time
-				
+				String[] task_info_arr = s.split(","); 
 				String task_id = task_info_arr[0];
 				Task t = new Task(task_id);
 				
@@ -571,15 +533,6 @@ public class Allocator {
 				t.setStatus(TaskStatus.NOT_STARTED);
 				
 				tasks.put(task_id, t);
-				
-				/**t.addSkilledWorker(wid); //RANDOM HACK FOR DUMMY SKILLED WORKER POPULATE IN DEMO
-				wid = ((wid)%15)+1;
-				if (count%2 == 0){
-					t.addSkilledWorker(wid);
-					wid = ((wid)%15)+1;
-				}
-				
-				count++;*/
 			}
 
 			// add task priorities
@@ -653,7 +606,9 @@ public class Allocator {
 	}
 
 	/**
-	 * Load worker task assignments and populate a given assignment with it
+	 * Load initial worker task assignments and populate a given assignment with it
+	 * @param inputStream
+	 * @param assignment
 	 */
 	private void loadWorkerTaskAssignments(InputStream inputStream, Map<String,List<Integer>> assignment) {
 		try {
@@ -692,16 +647,6 @@ public class Allocator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public Map<RiskCategory,Double> getErgoRiskMapForWorker(int workerId, Map<Integer, List<String>>workerTaskAssignment){
-		//List<String> tasks = workerTaskAssignment.get(workerId);
-		Map<RiskCategory,Double> result = new HashMap<RiskCategory,Double>();
-		for (RiskCategory cat: RiskCategory.values()){
-			double risk = this.getErgonomicRiskForWorker(workerTaskAssignment, workerId, cat);
-			result.put(cat, risk);
-		}
-		return result;
-		
 	}
 	private double getMaxErgoRiskForWorker(int workerId, Map<Integer,List<String>>workerTaskAssignment){
 		double maxRisk = 0;
@@ -781,15 +726,6 @@ public class Allocator {
 	}
 	public Map<RiskCategory,Integer> getNumberOfHighRiskWorkersSuggested(){
 		
-		//populateWorkerTaskAssignment(this.taskWorkerAssignmentsSuggested,this.workerTaskAssignmentsSuggested);
-		
-		
-		//DEBUG PRINTING
-  	    /*for (int i:this.workerTaskAssignmentsSuggested.keySet()){
-			System.out.print("worker" + i + " : " + workerTaskAssignmentsSuggested.get(i)+", ");
-		}
-		System.out.println();*/
-		
 		Map<RiskCategory,Integer> ergoRiskMap = new HashMap<RiskCategory,Integer>();
 
 		for (RiskCategory c : RiskCategory.values()) {
@@ -801,7 +737,6 @@ public class Allocator {
 
 				if (risk > 1) {
 					count++;
-					//System.out.print("high risk worker: " + workerId + "category: "+ c + ", ");
 				}
 			}
 			ergoRiskMap.put(c, count);
@@ -836,22 +771,14 @@ public class Allocator {
 		
 		//remove from original assignments
 		List<String> originalAssignments = this.workerTaskAssignmentsOriginal.get(workerId);
-		if (originalAssignments == null)
-			return;
-		for(String tid: originalAssignments){
-			List<Integer> workersForTask = this.taskWorkerAssignmentsOriginal.get(tid);
-			workersForTask.remove((Object)workerId);
+		if (originalAssignments != null) {
+			for(String tid: originalAssignments){
+				List<Integer> workersForTask = this.taskWorkerAssignmentsOriginal.get(tid);
+				workersForTask.remove((Object)workerId);
+			}
 		}
 		this.workerTaskAssignmentsOriginal.remove(workerId);
 		
-		//remove from suggested assignments
-		/*
-		List<String> suggestedAssignments = this.workerTaskAssignmentsSuggested.get(workerId);
-		for(String tid: suggestedAssignments){
-			List<Integer> workersForTask = this.taskWorkerAssignmentsSuggested.get(tid);
-			workersForTask.remove((Object)workerId);
-		}
-		this.workerTaskAssignmentsSuggested.remove(workerId);*/
 	}
 	public List<Integer> getWorkersForTaskOriginal (String taskId){
 		return this.taskWorkerAssignmentsOriginal.get(taskId);

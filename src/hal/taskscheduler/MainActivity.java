@@ -1,3 +1,4 @@
+
 package hal.taskscheduler;
 
 import hal.taskscheduler.dialogs.ReplanDialog.ExecuteReplanListener;
@@ -653,7 +654,7 @@ public class MainActivity extends Activity
 		alloc.setConstrainedCategories(constrainedCategories);
 		
 		
-		alloc.assignWorkersToTasks(preferredWorkers, getAlbumStorageDir("output"));
+		alloc.assignWorkersToTasks(preferredWorkers);
 
 		suggestedWorkers = alloc.getTaskWorkerAssignmentsSuggested();
 
