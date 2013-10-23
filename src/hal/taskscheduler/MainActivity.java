@@ -46,24 +46,31 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+/**
+ * This is the main activity class for the Android application
+ * @author RadhikaMalik
+ *
+ */
+
 public class MainActivity extends Activity
 		implements
 		hal.taskscheduler.dialogs.AvailabilityDialog.ChangeAvailabilityListener,
 		hal.taskscheduler.dialogs.TaskInfoDialog.ChangeTaskStatusListener,
 		ExecuteReplanListener {
 
-	Allocator alloc;
+	Allocator alloc; //the data model
+	
 	TableLayout worker_table;
 	TableLayout task_table;
 	TableLayout task_table_proposed;
 	TableLayout spare_worker_table;
 	TableLayout ergo_risk_table;
 	TableLayout ergo_risk_table_proposed;
+	
 	WorkerAvailabilityListener w_listener;
 	LinearLayout replanAcceptReject;
 	LinearLayout taskStatisticsLayoutProposed;
 	FrameLayout proposedTaskStatisticsView;
-	// TextView taskStatisticsView;
 
 	float scale;
 
@@ -86,10 +93,11 @@ public class MainActivity extends Activity
 
 		// fill the worker table
 		worker_table = (TableLayout) findViewById(R.id.worker_table);
-		fillWorkerTable(alloc.getWorkers(), worker_table);
+		fillWorkerTable(worker_table, alloc.getWorkers());
 
+		// fill the spare worker table
 		spare_worker_table = (TableLayout) findViewById(R.id.spare_worker_table);
-		fillWorkerTable(alloc.getSpareWorkers(), spare_worker_table);
+		fillWorkerTable(spare_worker_table, alloc.getSpareWorkers());
 
 		task_table = (TableLayout) findViewById(R.id.task_table);
 		task_table_proposed = (TableLayout) findViewById(R.id.task_table_proposed);
@@ -104,12 +112,13 @@ public class MainActivity extends Activity
 		// fill shift details
 		fillShiftDetails(task_table);
 
-		// fill table of statistics
+		// fill table of task statistics
 		taskStatisticsAll = (FrameLayout) findViewById(R.id.tasks_completed_text_all);
 
 		fillTaskStatistics(taskStatisticsAll, alloc.getTotalNumberOfTask(),
 				alloc.getNumberOfTasksCompletelyStaffed(originalAssignment));
 
+		// fill table of ergo risk statistics
 		ergo_risk_table = (TableLayout) findViewById(R.id.ergo_risk_category);
 		fillErgoRiskStatistics(ergo_risk_table,
 				alloc.getNumberOfHighRiskWorkersOriginal());
@@ -121,7 +130,11 @@ public class MainActivity extends Activity
 				.getShiftStartTime(), alloc.getShiftEndTime(), hours));
 
 	}
-
+	/**
+	 * Function to fill in an ergo risk statistics table given a risk map
+	 * @param table
+	 * @param riskMap
+	 */
 	private void fillErgoRiskStatistics(TableLayout table,
 			Map<RiskCategory, Integer> riskMap) {
 		// go through each available category and add a row with number of high
@@ -139,7 +152,6 @@ public class MainActivity extends Activity
 				b1.setText(numHighRisk.toString());
 				b1.setTextSize(12);
 				b1.setPadding(0, 0, 0, 0);
-				// b1.setBackgroundColor(Color.RED);
 
 				int width = 20 * numHighRisk;
 				FrameLayout f = new FrameLayout(this);
@@ -148,7 +160,6 @@ public class MainActivity extends Activity
 				row.addView(f);
 				int heightDp = (int) (15 * scale + 0.5f);
 				int widthDp = (int) (width * scale + 0.5f);
-				// System.out.println("width" + widthDp);
 
 				ViewGroup.LayoutParams params = b1.getLayoutParams();
 				params.height = heightDp;
@@ -164,12 +175,17 @@ public class MainActivity extends Activity
 
 	}
 
+	/**
+	 * Function to fill in an task statistics layout given the num of total tasks and 
+	 * num fully staffed.
+	 * @param fLayout
+	 * @param totalNumberOfTasks
+	 * @param numberOfTasksFullyStaffed
+	 */
 	private void fillTaskStatistics(FrameLayout fLayout,
 			int totalNumberOfTasks, int numberOfTasksFullyStaffed) {
 
-		// int totalNumberOfTasks = alloc.getTotalNumberOfTask();
-		// int numberOfTasksFullyStaffed =
-		// alloc.getNumberOfTasksCompletelyStaffed();
+
 		String result = numberOfTasksFullyStaffed + "/" + totalNumberOfTasks;
 		Button b = new Button(this);
 		b.setText(result);
@@ -184,13 +200,11 @@ public class MainActivity extends Activity
 		params.height = heightDp;
 		params.width = widthDp;
 
-		// LayerDrawable background = (LayerDrawable) view.getBackground();
-		// View background=view.findViewById(R.layout.task_completion_rect);
-		// View item = ((View) background).findViewById(R.id.inner_rect);
-		// item.setRight(10);
-		// System.out.println("Layers:" + background.getNumberOfLayers());
 	}
-
+	/**
+	 * Method to fill in shift details at the top
+	 * @param taskTable
+	 */
 	private void fillShiftDetails(TableLayout taskTable) {
 
 		Date shiftStartTime = alloc.getShiftStartTime();
@@ -237,9 +251,12 @@ public class MainActivity extends Activity
 		}
 
 	}
-
-	private void fillWorkerTable(Map<Integer, Worker> workerMap,
-			TableLayout workerTable) {
+	/**
+	 * Fill in a worker table given a worker map
+	 * @param workerMap
+	 * @param workerTable
+	 */
+	private void fillWorkerTable(TableLayout workerTable, Map<Integer, Worker> workerMap) {
 		workerTable.removeAllViews();
 		TableRow header = new TableRow(this);
 
@@ -621,7 +638,7 @@ public class MainActivity extends Activity
 			workerMap = alloc.getSpareWorkers();
 		}
 
-		this.fillWorkerTable(workerMap, tableToUpdate);
+		this.fillWorkerTable(tableToUpdate, workerMap);
 
 		this.fillTaskTable(task_table,
 				alloc.getTaskWorkerAssignmentsOriginal(), TaskType.ORIGINAL);
@@ -642,7 +659,6 @@ public class MainActivity extends Activity
 		alloc.setTaskStatus(taskId, status);
 		fillTaskTable(task_table, alloc.getTaskWorkerAssignmentsOriginal(),
 				TaskType.ORIGINAL);
-		// fillTaskTable(task_table, originalAssignment, );
 	}
 
 	@Override
