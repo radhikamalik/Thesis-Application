@@ -17,6 +17,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+/**
+ * Dialog to view and change worker availabilities
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class AvailabilityDialog extends DialogFragment {
 	
 	int workerId;
@@ -73,9 +79,6 @@ public class AvailabilityDialog extends DialogFragment {
 			String fromMin = bundle.getString("fromMin");
 			String toMin = bundle.getString("toMin");
 			String toAmPm = bundle.getString("toAmPm");
-			
-			System.out.println("from hr: "+ fromHr + "fromin: " + fromMin + "fromAmPm: " + fromAmPm);
-			System.out.println("to hr: "+ toHr + "to min: " + toMin + "fromAmPm: " + toAmPm);
 			
 			EditText fromHrText = (EditText) availView.findViewById(R.id.fromHour);
 			EditText toHrText = (EditText) availView.findViewById(R.id.toHour);
@@ -153,6 +156,7 @@ public class AvailabilityDialog extends DialogFragment {
                     	}
                     	bundle.putSerializable("availability", availability);
                     	
+                    	// send back to main activity!
                     	mListener.onSaveChangeAvailability(AvailabilityDialog.this);
 
                     }

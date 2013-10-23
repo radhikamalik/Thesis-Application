@@ -12,6 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * Dialog to view worker medical restrictions.
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class MedicalRestrictionDialog extends DialogFragment {
 	
 	int workerId;

@@ -16,6 +16,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Dialog to view worker certifications.
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class CertificationDialog extends DialogFragment {
 	
 	List<String> certifications;
