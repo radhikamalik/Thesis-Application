@@ -381,7 +381,12 @@ public class MainActivity extends Activity
 
 		}
 	}
-
+	/**
+	 * Fill the task table given the worker task assignments and the type of table being populated
+	 * @param tableLayout
+	 * @param workerTaskAssignment
+	 * @param type :ORIGINAL or SUGGESTED
+	 */
 	private void fillTaskTable(TableLayout tableLayout,
 			Map<String, List<Integer>> workerTaskAssignment, TaskType type) {
 
@@ -490,7 +495,6 @@ public class MainActivity extends Activity
 			for (int wId : workersAssigned) {
 				Button b = new Button(this);
 				int heightDp = (int) (18 * scale + 0.5f);
-				// b.setText(String.valueOf(wId));
 				double workerMaxRisk;
 				if (type == TaskType.ORIGINAL)
 					workerMaxRisk = alloc.getMaxErgoRiskForWorkerOriginal(wId);
@@ -509,12 +513,6 @@ public class MainActivity extends Activity
 
 				ViewGroup.LayoutParams params = b.getLayoutParams();
 				params.height = heightDp;
-				/*
-				 * Button dummyButton = new Button(this);
-				 * dummyButton.setText(""); dummyButton.setTextSize(8);
-				 * row.addView(dummyButton); b.setPadding(0, 0, 0, 0); params =
-				 * dummyButton.getLayoutParams(); params.height = heightDp;
-				 */
 			}
 
 			// add blank buttons for more workers required.
@@ -538,7 +536,11 @@ public class MainActivity extends Activity
 			tableLayout.setVisibility(View.VISIBLE);
 		}
 	}
-
+	/**
+	 * One option we need to include is abilitites to sort/filter tasks.
+	 * Although the functionality is not implemented in this prototype, the buttons are
+	 * put in so that in the demo users can see that this option will be available.
+	 */
 	private void fillTaskTableManipButtons() {
 		Button taskSorter = (Button) this.findViewById(R.id.task_sort_button);
 		
@@ -568,19 +570,17 @@ public class MainActivity extends Activity
 			          });
 			          AlertDialog alert = builder.create();
 			          alert.show();
-
 			}
-
 		});
-
 	}
 	private void sortTasksByStartTime(){
-		 
+		 //TODO: implement in later version!
 	}
 	public void sortTasks(int sortOption){
 		switch(sortOption){
 		case 0: sortTasksByStartTime();
 		}
+		// TODO: add more here in later version!
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -588,14 +588,15 @@ public class MainActivity extends Activity
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
+	/**
+	 * Method called when "Save" button is pressed on "Availability Dialog" to save
+	 * changed worker availability
+	 */
 	@Override
-	public void onDialogPositiveClick(DialogFragment dialog) {
+	public void onSaveChangeAvailability(DialogFragment dialog) {
 
-		// System.out.println("save clicked!");
 		Bundle bundle = dialog.getArguments();
 		int workerId = bundle.getInt("workerId");
-		// System.out.println("WORKERID: " + workerId);
 		WorkerAvailability availability = (WorkerAvailability) bundle
 				.getSerializable("availability");
 
@@ -649,9 +650,11 @@ public class MainActivity extends Activity
 				alloc.getNumberOfHighRiskWorkersOriginal());
 		dialog.dismiss();
 	}
-
+	/**
+	 * Method called when "Save" button is pressed to save a task status change in TaskInfoDialog
+	 */
 	@Override
-	public void onTaskStatusChange(DialogFragment dialog) {
+	public void onSaveTaskStatusChange(DialogFragment dialog) {
 		Bundle bundle = dialog.getArguments();
 		String taskId = bundle.getString("taskId");
 		TaskStatus status = (TaskStatus) bundle.getSerializable("status");
@@ -661,6 +664,9 @@ public class MainActivity extends Activity
 				TaskType.ORIGINAL);
 	}
 
+	/**
+	 * Method called when the "Save" button is pressed on the ReplanDialog to re-plan for new assignments
+	 */
 	@Override
 	public void onExecuteReplan(DialogFragment dialog) {
 		Bundle bundle = dialog.getArguments();
@@ -733,22 +739,15 @@ public class MainActivity extends Activity
 			}
 		});
 	}
-
+	/**
+	 * Hides all tables in the proposed panel.
+	 */
 	public void hideProposed() {
 		task_table_proposed.setVisibility(View.GONE);
 		replanAcceptReject.setVisibility(View.GONE);
 		taskStatisticsLayoutProposed.setVisibility(View.GONE);
 		ergoRiskStatisticsLayoutProposed.setVisibility(View.GONE);
 
-	}
-	public File getAlbumStorageDir(String albumName) {
-	    // Get the directory for the user's public pictures directory. 
-	    File file = new File(Environment.getExternalStoragePublicDirectory(
-	            Environment.DIRECTORY_DOWNLOADS), albumName);
-	    if (!file.mkdirs()) {
-	        System.out.println("Directory not created");
-	    }
-	    return file;
 	}
 
 }

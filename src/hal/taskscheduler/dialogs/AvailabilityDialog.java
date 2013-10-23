@@ -24,7 +24,7 @@ public class AvailabilityDialog extends DialogFragment {
 	View availView;
 	
 	public interface ChangeAvailabilityListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
+        public void onSaveChangeAvailability(DialogFragment dialog);
     }
     
 	ChangeAvailabilityListener mListener;	
@@ -153,7 +153,7 @@ public class AvailabilityDialog extends DialogFragment {
                     	}
                     	bundle.putSerializable("availability", availability);
                     	
-                    	mListener.onDialogPositiveClick(AvailabilityDialog.this);
+                    	mListener.onSaveChangeAvailability(AvailabilityDialog.this);
 
                     }
                 });

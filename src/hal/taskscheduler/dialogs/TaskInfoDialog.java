@@ -37,7 +37,7 @@ public class TaskInfoDialog extends DialogFragment {
 	ChangeTaskStatusListener mListener;
 	
 	public interface ChangeTaskStatusListener {
-        public void onTaskStatusChange(DialogFragment dialog);
+        public void onSaveTaskStatusChange(DialogFragment dialog);
     }
 	
 	
@@ -86,10 +86,8 @@ public class TaskInfoDialog extends DialogFragment {
                     	
                     	//changing task status so send new task status in bundle
                     	Bundle bundle = TaskInfoDialog.this.getArguments();
-                    	//String statusStr=((Spinner)view.findViewById(R.id.task_status_spinner)).getSelectedItemPosition().toString();
                     	int selected=((Spinner)view.findViewById(R.id.task_status_spinner)).getSelectedItemPosition();
                     	TaskStatus status = null;
-                    	//System.out.println("new status: " + selected);
                     	
                     	if (selected == 0){
                     		status = TaskStatus.NOT_STARTED;
@@ -101,7 +99,7 @@ public class TaskInfoDialog extends DialogFragment {
                     	}
                     	
                     	bundle.putSerializable("status", status);
-                    	mListener.onTaskStatusChange(TaskInfoDialog.this);
+                    	mListener.onSaveTaskStatusChange(TaskInfoDialog.this);
                     }
 		});
 		
