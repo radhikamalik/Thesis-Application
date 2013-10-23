@@ -45,10 +45,17 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+/**
+ * Dialog to get planning options. This is the main interface 
+ * between the user and the automated planner. 
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class ReplanDialog extends DialogFragment {
 
 	View view;
-	RadioGroup planOptionRg;
+	RadioGroup planOptionRg; //planning option
 	TableLayout preferenceLayout;
 	Spinner additionalWorkersNumberSelect;
 	LinearLayout riskAllowanceLayout;
@@ -151,8 +158,6 @@ public class ReplanDialog extends DialogFragment {
 		builder.setPositiveButton("Save",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						System.out.println(ReplanDialog.this.preferredWorkers);
-						System.out.println("constrained categories: " + constrainedCategories);
 						Bundle bundle = ReplanDialog.this.getArguments();
 
 						bundle.putSerializable(
@@ -193,32 +198,28 @@ public class ReplanDialog extends DialogFragment {
 					}
 
 				}
-			}
-
-			);
-
+			});
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			params.setMargins(450, 0, 0, 0);
 			riskAllowanceLayout.addView(cb, params);
-			// params.
 		}
-
 	}
-
 	private void populateAdditionalWorkers(Spinner additionalWorkersNumberSelect) {
 		Integer[] additionalWorkers = new Integer[spareWorkers.size()];
 
 		for (int i = 0; i < spareWorkers.size(); ++i) {
 			additionalWorkers[i] = i;
-
 		}
 		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(
 				view.getContext(), android.R.layout.simple_spinner_item,
 				additionalWorkers);
 		additionalWorkersNumberSelect.setAdapter(adapter);
 	}
-
+	/**
+	 * Populate table that shows each task, task timeline, workers preferred/not preferred
+	 * @param preferenceLayout
+	 */
 	private void populatePreferenceTable(TableLayout preferenceLayout) {
 
 		Integer[] ids = { R.id.time_1_replan, R.id.time_2_replan,
@@ -228,17 +229,13 @@ public class ReplanDialog extends DialogFragment {
 
 		DateFormat dateFormat = new SimpleDateFormat("h:mm");
 		for (int i = 0; i < hours + 1; i++) {
-
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(shiftStartTime);
 			cal.add(Calendar.HOUR_OF_DAY, i);
 			Date newDate = cal.getTime();
-
 			String dateStr = dateFormat.format(newDate);
-
 			TextView userText = (TextView) view.findViewById(ids[i]);
 			userText.setText(dateStr + " ");
-
 		}
 
 		Context viewContext = view.getContext();
@@ -275,7 +272,6 @@ public class ReplanDialog extends DialogFragment {
 
 					if ((i >= taskStartIndex) && (i < taskEndIndex))
 						view.setBackgroundColor(Color.BLUE);
-					// view.setText("hello");
 					TableRow.LayoutParams timeLayoutParams = new TableRow.LayoutParams(
 							TableRow.LayoutParams.MATCH_PARENT,
 							TableRow.LayoutParams.WRAP_CONTENT);
@@ -297,12 +293,7 @@ public class ReplanDialog extends DialogFragment {
 				t1 = new TextView(viewContext);
 				Set<Integer> skilledWorkerIds = t.getCertifiedWorkers();
 				String skilledWorkerStr = "";
-				/*
-				for (int workerId : skilledWorkerIds) {
-					Worker w = workersToPlanWith.get(workerId);
-					if (w != null)
-						skilledWorkerStr += w.getWorkerName() + "; ";
-				}*/
+
 				t1.setGravity(Gravity.CENTER_HORIZONTAL);
 				t1.setText(skilledWorkerStr);
 				row.addView(t1);
@@ -310,7 +301,6 @@ public class ReplanDialog extends DialogFragment {
 
 				// add button to select preferred workers
 				Button selectPrefferedButton = new Button(viewContext);
-				// selectPrefferedButton.setId(id)
 				selectPrefferedButton.setPadding(0, 0, 0, 0);
 				row.addView(selectPrefferedButton);
 
@@ -321,13 +311,6 @@ public class ReplanDialog extends DialogFragment {
 						.setOnClickListener(new SelectPreferredWorkerListener(
 								preferredWorkerIds, new ArrayList<Worker>(
 										this.scheduledWorkers.values()), tid));
-				/*
-				 * TableRow.LayoutParams params = new TableRow.LayoutParams(
-				 * TableRow.LayoutParams.MATCH_PARENT,
-				 * TableRow.LayoutParams.WRAP_CONTENT); params.setMargins(0, 0,
-				 * 0, 0); selectPrefferedButton.setLayoutParams(params);
-				 * selectPrefferedButton.setText("s");
-				 */
 
 				final float scale = getResources().getDisplayMetrics().density;
 				int heightDp = (int) (25 * scale + 0.5f);
@@ -340,7 +323,6 @@ public class ReplanDialog extends DialogFragment {
 				List<Integer> notPreferredWorkerIds = new ArrayList<Integer>();
 				this.notPreferredWorkers.put(tid, notPreferredWorkerIds);
 				Button selectNotPrefferedButton = new Button(viewContext);
-				// selectPrefferedButton.setId(id)
 				selectNotPrefferedButton.setPadding(0, 0, 0, 0);
 				row.addView(selectNotPrefferedButton);
 				selectNotPrefferedButton
@@ -365,20 +347,18 @@ public class ReplanDialog extends DialogFragment {
 
 		}
 	}
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		// Verify that the host activity implements the callback interface
 		try {
-			// Instantiate the NoticeDialogListener so we can send events to the
+			// Instantiate the ExecuteReplanListener so we can send events to the
 			// host
 			mListener = (ExecuteReplanListener) activity;
 		} catch (ClassCastException e) {
 			// The activity doesn't implement the interface, throw exception
 			throw new ClassCastException(activity.toString()
-					+ " must implement NoticeDialogListener");
+					+ " must implement ExecuteReplanListener");
 		}
 	}
-
 }

@@ -170,12 +170,12 @@ public class AvailabilityDialog extends DialogFragment {
         super.onAttach(activity);
         // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
+            // Instantiate the ChangeAvailabilityListener so we can send events to the host
             mListener = (ChangeAvailabilityListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
-                    + " must implement NoticeDialogListener");
+                    + " must implement ChangeAvailabilityListener");
         }
     }
 }
