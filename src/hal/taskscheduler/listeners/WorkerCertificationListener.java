@@ -1,16 +1,20 @@
 package hal.taskscheduler.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import hal.taskscheduler.dialogs.CertificationDialog;
-import hal.taskscheduler.dialogs.MedicalRestrictionDialog;
+
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
+/**
+ * On click listener for button to view worker medical certifications
+ * Opens the .
+ * @author RadhikaMalik
+ *
+ */
 public class WorkerCertificationListener implements OnClickListener{
 
 	String restriction;
@@ -22,9 +26,11 @@ public class WorkerCertificationListener implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		
-		//int workerId = v.getId();
-		//System.out.println("click: " + workerId);
+
 		Bundle bundle = new Bundle();
+		
+		//TODO: these are dummy certifications populated for the demo. Need to be changed to 
+		// be actual worker certs.
 		
 		ArrayList<String> certifications = new ArrayList<String>();
 		certifications.add("Certification A");

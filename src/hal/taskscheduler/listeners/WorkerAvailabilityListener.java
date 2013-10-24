@@ -13,7 +13,13 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
+/**
+ * Listener for onclick events for button to view/change worker availability. 
+ * Opens the AvailabilityDialog. 
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class WorkerAvailabilityListener implements OnClickListener{
 
 	Worker worker;

@@ -12,6 +12,13 @@ import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+/**
+ * Listener for change in the planning option in the ReplanDialog.
+ * 
+ * @author RadhikaMalik
+ *
+ */
+
 public class ReplanOptionChangeListener implements
 		RadioGroup.OnCheckedChangeListener {
 
@@ -44,8 +51,6 @@ public class ReplanOptionChangeListener implements
 
 		View radioButton = rg.findViewById(id);
 		int idx = rg.indexOfChild(radioButton);
-		// LinearLayout additionalWorkerLayout = (LinearLayout)
-		// view.findViewById(R.id.additional_workers_option);
 		LinearLayout numberWorkersLayout = (LinearLayout) view
 				.findViewById(R.id.number_workers_layout);
 		LinearLayout selectWorkersLayout = (LinearLayout) view
@@ -56,6 +61,7 @@ public class ReplanOptionChangeListener implements
 		TextView additionalWorkersSelectText = (TextView) view
 				.findViewById(R.id.additional_workers_select_text);
 
+		// based on planning option show stuff
 		if (idx == 0) {
 			selectWorkersLayout.setVisibility(View.GONE);
 			numberWorkersLayout.setVisibility(View.GONE);

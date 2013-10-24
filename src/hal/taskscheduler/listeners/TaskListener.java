@@ -12,10 +12,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+/**
+ * Listener for click events when task is clicked upon.
+ * @author RadhikaMalik
+ *
+ */
+
 public class TaskListener implements OnClickListener{
 	
 	Task task;
 	TaskType type;
+	
+	// what type of assignments the task button belongs to: original or suggested
 	public enum TaskType {
 		ORIGINAL,SUGGESTED;
 	}
@@ -37,7 +45,6 @@ public class TaskListener implements OnClickListener{
 		bundle.putInt("priority", priority);
 		bundle.putSerializable("taskType",type);
 		bundle.putSerializable("ergoRisk", (Serializable) task.getErgoRiskAllCategories());
-		System.out.println("status on listener: " + status);
 		
 		DialogFragment newFragment = new TaskInfoDialog();
 		newFragment.setArguments(bundle);

@@ -11,7 +11,13 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
+/**
+ * Listens to on click events for the Replan button.
+ * Instantiates the ReplanDialog
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class ReplanListener implements OnClickListener{
 
 	Allocator alloc;

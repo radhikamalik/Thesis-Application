@@ -68,7 +68,7 @@ public class Worker {
 	}
 	/**
 	 * checks availability constraint for worker
-	 * @param t
+	 * @param task
 	 * @return
 	 */
 	public boolean isAvailableForTask(Task task){

@@ -11,6 +11,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+/**
+ * Listener that listens to click events for button to select preferred workers for task in the 
+ * ReplanDialog. Instantiates a OnMultiChoiceClickListener to select workers.
+ * 
+ * @author RadhikaMalik
+ *
+ */
 public class SelectPreferredWorkerListener implements OnClickListener {
 
 	List<Worker> allWorkers; // list of all workers
@@ -38,21 +45,17 @@ public class SelectPreferredWorkerListener implements OnClickListener {
 			}
 
 		}
-
 	}
 
 	@Override
 	public void onClick(final View v) {
-
-		//System.out.println("hi");
 
 		int count = allWorkers.size();
 		boolean[] checkedWorkers = new boolean[count];
 
 
 		for (int i = 0; i < count; i++){
-			//int workerId = allWorkers.get(i).getWorkerID();
-			//checkedWorkers[i] = selectedWorkerIds.contains(workerId);
+
 			checkedWorkers[i] = selectedWorkerIndices.contains(i);
 		}
 		

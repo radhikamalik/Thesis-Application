@@ -18,7 +18,8 @@ public class ReplanAcceptListener implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// replace the content in task_table with that in proposed_table
+		// TODO button is not functional in demo
+		// need to replace the content in task_table with that in proposed_table
 		
 
 	}
