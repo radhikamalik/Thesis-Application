@@ -107,11 +107,7 @@ public class SolverMinSuggested {
 																			// unassigned
 																			// tasks
 																			// based
-		System.out.println(understaffedTasks);																	// on
-																			// heuristic
-		// System.out.println("initial understaffed sorted: " +
-		// understaffedTasks);
-		System.out.println(this.initialAssignmentWorkerToTask);
+
 
 	}
 
@@ -163,30 +159,8 @@ public class SolverMinSuggested {
 		}
 	}
 
-	/**
-	 * For each task populate the workers who are skilled to perform given task
-	 */
-	/*
-	 * public void populateSkilledWorkers(){
-	 * 
-	 * for (String tid: this.allTasks.keySet()){ Task t =
-	 * this.allTasks.get(tid); List<Integer> certifiedWorkers =
-	 * t.getCertifiedWorkers(); for (int workerId: certifiedWorkers){ Worker w =
-	 * this.allWorkers.get(workerId); if (w.isAvailableForTask(t))
-	 * 
-	 * } //System.out.println("task: " + tid + " skilled workers: " +
-	 * t.getCertifiedWorkers()); }
-	 * 
-	 * 
-	 * }
-	 */
 	public Map<String, List<Integer>> solve() {
-		// this.numCalls = 0;
-		/*
-		 * try{
-		 * 
-		 * } catch (NoSolutionFoundException e){ return null; }
-		 */
+
 		return recursiveSolve(this.initialAssignmentTaskToWorker,
 				this.understaffedTasks, this.possibleWorkersForTasks,
 				this.workerErgoRisk, this.initialAssignmentWorkerToTask);
@@ -203,19 +177,14 @@ public class SolverMinSuggested {
 	 * @param workerIds
 	 * @return
 	 */
-	private boolean isConsistentNew(Map<String, List<Integer>> currentSol,
+	private boolean isConsistent(Map<String, List<Integer>> currentSol,
 			String tid, int wId,
 			Map<Integer, Map<RiskCategory, Double>> currentWorkerErgoRisk, Map<Integer, List<String>> currentSolWorkerToTask) {
 
 		Task task = allTasks.get(tid);
 
 		Set<String> overlapIds = task.getOverlappingTasks();
-		// System.out.println("OVERLAPS: " + overlapIds);
-		// double maxRisk =
-		// task.getMaxRiskFromCategories(constrainedCategories);
 
-		// System.out.println("checking consistency of task: " + tid +
-		// "with workers:"+ workerIds);
 
 		Worker w = this.allWorkers.get(wId);
 		// availability constraints
@@ -328,7 +297,7 @@ public class SolverMinSuggested {
 			List<String> tasksForWorker = currentSolInvertMap.get(workerIdToAssign);
 			
 
-			if (this.isConsistentNew(currentSol, tId, workerIdToAssign,
+			if (this.isConsistent(currentSol, tId, workerIdToAssign,
 					currentWorkerErgoRisk,currentSolInvertMap)) {
 				
 				
@@ -483,13 +452,7 @@ public class SolverMinSuggested {
 
 		List<Integer> initiallyPopulated = possibleWorkersForTasks.get(tId);
 		return initiallyPopulated;
-		/*
-		 * List<Integer> alreadyInSol = currentSol.get(tId); if (alreadyInSol !=
-		 * null){ List<Integer> updatedPopulated = new
-		 * ArrayList<Integer>(initiallyPopulated);
-		 * updatedPopulated.removeAll(alreadyInSol); return updatedPopulated;
-		 * }else return initiallyPopulated;
-		 */
+
 	}
 
 	public Map<String, List<Integer>> getCurrentBestAssignment() {

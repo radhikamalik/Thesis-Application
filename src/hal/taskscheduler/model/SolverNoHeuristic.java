@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SolverNoHeuristic {
+public class SolverNoHeuristic implements SolverInterface {
 
 	
 	Map<String, List<Integer>> currentBestAssignment;
@@ -19,7 +19,6 @@ public class SolverNoHeuristic {
 	Map<String,Task> allTasks;
 	Map<Integer,Worker> allWorkers;
 	List<RiskCategory> constrainedCategories;
-	private int numCalls;
 	
 	public SolverNoHeuristic(Map<String,Task> allTasks, Map<String,List<Integer>> initialAssignmentTaskToWorker, Map<Integer,Worker>allWorkers,List<RiskCategory>constrainedCategories){
 		this.currentBestAssignment = new HashMap<String,List<Integer>>();
@@ -41,11 +40,8 @@ public class SolverNoHeuristic {
 			}
 		}
 		currentBestAssignmentTasksRemaining = understaffedTasks.size();
-		//System.out.println("initial best: " + currentBestAssignmentTasksRemaining);
-		//System.out.println("initial understaffed tasks: " + understaffedTasks);
 		this.constrainedCategories=constrainedCategories;
 		Collections.sort(understaffedTasks,new TaskSorterNoHeuristic(this.allTasks,this.constrainedCategories,this.possibleWorkersForTasks)); //sort unassigned tasks based on heuristic
-		//System.out.println("initial understaffed sorted: " + understaffedTasks);
 		
 		populateInitialWorkerDomain();
 	}
@@ -70,7 +66,6 @@ public class SolverNoHeuristic {
 			this.possibleWorkersForTasks.put(tId, workersForTask); //populate map of worker domain for given task
 			
 		}
-		//System.out.println("task domain map: " + this.possibleWorkersForTasks);
 		
 	}
 	/**
@@ -92,13 +87,9 @@ public class SolverNoHeuristic {
 		
 		
 	}*/
+	@Override
 	public Map<String,List<Integer>> solve(){
-		//this.numCalls = 0;
-		/*try{
-			
-		} catch (NoSolutionFoundException e){
-			return null;
-		}*/
+
 		return recursiveSolve(this.initialAssignmentTaskToWorker, this.understaffedTasks);
 	}
 	
@@ -109,7 +100,7 @@ public class SolverNoHeuristic {
 	 * @param workerIds
 	 * @return
 	 */
-	private boolean isConsistentNew(Map<String,List<Integer>> currentSol, String tid, int wId){
+	private boolean isConsistent(Map<String,List<Integer>> currentSol, String tid, int wId){
 		
 		Task task = allTasks.get(tid);
 		
@@ -191,21 +182,13 @@ public class SolverNoHeuristic {
 					}
 				}
 			}
-			
-				/*DEBUG else{
-					System.out.println("task: "+currentTaskRisk + " category: "+c);
-					System.out.println("worker cumulative: " + risk);
-				}*/
+
 			
 		
 		return true;
 	}
 	private Map<String,List<Integer>> recursiveSolve(Map<String,List<Integer>> currentSol, List<String>unassignedTasks){// throws NoSolutionFoundException{
-		//numCalls++;
-		/*if (numCalls > 100 ){
-			System.out.println("num calls: " + numCalls);
-			throw new NoSolutionFoundException();
-		}*/
+
 		
 		if (unassignedTasks.size() == 0)
 			return currentSol;
@@ -229,7 +212,7 @@ public class SolverNoHeuristic {
 			//add workers to current task so now it's fully assigned workers
 			int workerIdToAssign = possibleWorkerIds.get(i);
 			
-			if (this.isConsistentNew(currentSol, tId, workerIdToAssign)) {
+			if (this.isConsistent(currentSol, tId, workerIdToAssign)) {
 				
 				
 				updatedWorkersAssigned.add(workerIdToAssign);
@@ -249,11 +232,6 @@ public class SolverNoHeuristic {
 								currentSol);
 						this.currentBestAssignmentTasksRemaining = updatedUnassignedTasks
 								.size();
-						/*
-						System.out.println("found better of tasks left: "
-								+ updatedUnassignedTasks.size());
-						System.out.println("unassigned tasks: " + updatedUnassignedTasks);
-						System.out.println("current best: " + currentBestAssignment);*/
 					}
 				}
 				// recurse
@@ -291,6 +269,7 @@ public class SolverNoHeuristic {
 		}else
 			return initiallyPopulated;
 	}
+	@Override
 	public Map<String, List<Integer>> getCurrentBestAssignment(){
 		return this.currentBestAssignment;
 	}

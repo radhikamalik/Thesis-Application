@@ -5,6 +5,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Sort tasks only based on dependencies and priorities, no other heuristic
+ * @author RadhikaMalik
+ *
+ */
+
 public class TaskSorterNoHeuristic implements Comparator<String> {
 
 	Map<String, Task> allTasks;
@@ -25,22 +31,17 @@ public class TaskSorterNoHeuristic implements Comparator<String> {
 		Task t1 = allTasks.get(tid1);
 		Task t2 = allTasks.get(tid2);
 
-		//System.out.println(tid1+ ":" + t1.getDependencies());
-		//System.out.println(tid2 + ":" + t2.getDependencies());
 		if (t1.getDependencies().contains(tid2)){ //t1 depends on t2, thus t1 must be assigned later than t2 -> sorting must place t1 after
-			//System.out.println("DEPENDENCY!" + tid1 + ";" + tid2);
 			return 1;
 		}
 		if (t2.getDependencies().contains(tid1)){ //opp of above case 
-			//System.out.println("DEPENDENCY!" + tid1 + ";" + tid2);
 			return -1;
 			
 		}
 		
 		//neither dependent on the other
-				
-		
-		//priority heuristic
+
+		//priority 
 		int t1_p = t1.getPriority();
 		int t2_p = t2.getPriority();
 		
