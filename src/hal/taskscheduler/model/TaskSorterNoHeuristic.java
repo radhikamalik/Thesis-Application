@@ -1,28 +1,19 @@
 package hal.taskscheduler.model;
 
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
 /**
- * Sort tasks only based on dependencies and priorities, no other heuristic
+ * Comparator that sorts only based on dependency and priority and no other heuristic.
  * @author RadhikaMalik
  *
  */
-
-public class TaskSorterNoHeuristic implements Comparator<String> {
-
-	Map<String, Task> allTasks;
-	List<RiskCategory> constrainedCategory;
-	Map<String, List<Integer>> possibleWorkersForTasks;
+public class TaskSorterNoHeuristic extends TaskSorter {
 
 	public TaskSorterNoHeuristic(Map<String, Task> allTasks,
-			List<RiskCategory> constrainedCategory, Map<String, List<Integer>> possibleWorkersForTasks) {
-		
-		this.allTasks = allTasks;
-		this.constrainedCategory = constrainedCategory;
-		this.possibleWorkersForTasks = possibleWorkersForTasks;
+			List<RiskCategory> constrainedCategory,
+			Map<String, List<Integer>> possibleWorkersForTasks) {
+		super(allTasks, constrainedCategory, possibleWorkersForTasks);
 	}
 
 	@Override
@@ -40,8 +31,8 @@ public class TaskSorterNoHeuristic implements Comparator<String> {
 		}
 		
 		//neither dependent on the other
-
-		//priority 
+				
+		//priority heuristic
 		int t1_p = t1.getPriority();
 		int t2_p = t2.getPriority();
 		

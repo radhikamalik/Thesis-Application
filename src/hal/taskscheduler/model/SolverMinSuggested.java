@@ -8,24 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SolverMinSuggested {
-
-	Map<String, List<Integer>> currentBestAssignment;
-	int currentBestAssignmentTasksRemaining; // number of tasks understaffed in
-												// current best assignment
-	List<String> understaffedTasks;
-	Map<String, List<Integer>> initialAssignmentTaskToWorker;
-	Map<String, List<Integer>> possibleWorkersForTasks; // for each task domain
-														// of workers it can be
-														// assigned to
-
-	Map<String, Task> allTasks;
-	Map<Integer, Worker> allWorkers;
-	List<RiskCategory> constrainedCategories;
-	//private int numCalls;
-	private Map<Integer, Worker> workersSpare;
-	private Map<Integer, Map<RiskCategory, Double>> workerErgoRisk;
-	private Map<Integer, List<String>> initialAssignmentWorkerToTask;
+public class SolverMinSuggested extends Solver {
 
 	public SolverMinSuggested(Map<String, Task> allTasks,
 			Map<String, List<Integer>> initialAssignmentTaskToWorker,
@@ -75,10 +58,7 @@ public class SolverMinSuggested {
 			}
 		}
 		currentBestAssignmentTasksRemaining = understaffedTasks.size();
-		// System.out.println("initial best: " +
-		// currentBestAssignmentTasksRemaining);
-		// System.out.println("initial understaffed tasks: " +
-		// understaffedTasks);
+
 		this.constrainedCategories = constrainedCategories;
 		
 		
@@ -101,62 +81,14 @@ public class SolverMinSuggested {
 		System.out.println(workerErgoRisk);
 		populateInitialWorkerDomain();
 		
-		
+		// sort unassigned tasks based on heuristc
 		Collections.sort(understaffedTasks, new TaskSorterMRVHeuristic(this.allTasks,
-				this.constrainedCategories, this.possibleWorkersForTasks)); // sort
-																			// unassigned
-																			// tasks
-																			// based
+				this.constrainedCategories, this.possibleWorkersForTasks)); 
+		System.out.println(understaffedTasks);								
+																			
 
+		System.out.println(this.initialAssignmentWorkerToTask);
 
-	}
-
-	private void populateInitialWorkerDomain() {
-
-		for (String tId : allTasks.keySet()) {
-			Task t = allTasks.get(tId);
-			List<Integer> workersForTask = new ArrayList<Integer>();
-			for (int workerId : allWorkers.keySet()) {
-
-				if (t.getCertifiedWorkers().contains(workerId)) { // worker is
-																	// certified
-																	// to
-																	// perform
-																	// task
-					Worker w = this.allWorkers.get(workerId);
-
-					List<Integer> workersAlreadyAssigned = this.initialAssignmentTaskToWorker
-							.get(tId); // workers initially assigned
-					if (w.isAvailableForTask(t)
-							&& !workersAlreadyAssigned.contains(workerId)) { 
-						// worker not already assigned so add it
-						workersForTask.add(workerId);
-					}
-				}
-
-			}
-			if (this.workersSpare != null) { // can plan with spares too so add
-												// them at the end
-				for (int workerId : workersSpare.keySet()) {
-
-					if (t.getCertifiedWorkers().contains(workerId)) { 
-						//worker is certified!
-						Worker w = this.workersSpare.get(workerId);
-
-						List<Integer> workersAlreadyAssigned = this.initialAssignmentTaskToWorker
-								.get(tId); // workers initially assigned
-						if (w.isAvailableForTask(t)
-								&& !workersAlreadyAssigned.contains(workerId)) { 
-							workersForTask.add(workerId);
-						}
-					}
-
-				}
-			}
-			// edit map of worker domain for given task
-			this.possibleWorkersForTasks.put(tId, workersForTask); 
-
-		}
 	}
 
 	public Map<String, List<Integer>> solve() {
@@ -166,92 +98,13 @@ public class SolverMinSuggested {
 				this.workerErgoRisk, this.initialAssignmentWorkerToTask);
 	}
 
-	/**
-	 * function to check if the new assignment is consistent with current
-	 * assignment
-	 * 
-	 * @param currentSol
-	 * @param currentWorkerErgoRisk
-	 * @param currentSolWorkerToTask 
-	 * @param task
-	 * @param workerIds
-	 * @return
-	 */
-	private boolean isConsistent(Map<String, List<Integer>> currentSol,
-			String tid, int wId,
-			Map<Integer, Map<RiskCategory, Double>> currentWorkerErgoRisk, Map<Integer, List<String>> currentSolWorkerToTask) {
-
-		Task task = allTasks.get(tid);
-
-		Set<String> overlapIds = task.getOverlappingTasks();
-
-
-		Worker w = this.allWorkers.get(wId);
-		// availability constraints
-		// the new task must be during the worker's availability
-		// since initial task domain always must have worker be available,
-		// assert this!
-		assert (w.isAvailableForTask(task));
-
-		// constraint 1: no worker can work on 2 tasks at the same time
-		// for all overlapping tasks for current task, ensure worker is not
-		// assigned to any of these tasks
-		for (String overlapId : overlapIds) {
-			List<Integer> workersInOverlaps = currentSol.get(overlapId);
-			if (workersInOverlaps.contains(wId)) // an overlapping task contains
-													// the same worker
-				return false;
-		}
-		// ergonomic risk threshold constraint
-
-		Map<RiskCategory, Double> taskErgoRiskMap = task
-				.getErgoRiskAllCategories();
-		Map<RiskCategory, Double> workerErgoRiskMap = currentWorkerErgoRisk
-				.get(wId);
-
-		// ergo risk is not satisfied
-		for (RiskCategory c : this.constrainedCategories) {
-			Double tRisk = taskErgoRiskMap.get(c);
-			Double wRisk = workerErgoRiskMap.get(c);
-
-			if (tRisk == null)
-				continue;
-			else if (tRisk > 1){
-				//task risk more than 1 so check if worker is performing any task with ergo risk in this cat
-				List<String> tasksForWorker = currentSolWorkerToTask.get(wId);
-				for (String priorTask : tasksForWorker){
-					Task other = this.allTasks.get(priorTask);
-					Map<RiskCategory,Double> otherTaskErgoMap = other.getErgoRiskAllCategories();
-					Double otherTRisk = otherTaskErgoMap.get(c);
-					if (otherTRisk != null){
-						if (otherTRisk > 0)
-							return false;
-					}
-				}
-			}
-			else {
-				Double cumRisk = tRisk + wRisk;
-				if (cumRisk > 1)
-					return false;
-			}
-
-		}
-
-		return true;
-	}
 
 	private Map<String, List<Integer>> recursiveSolve(
 			Map<String, List<Integer>> currentSol,
 			List<String> unassignedTasks,
 			Map<String, List<Integer>> possibleWorkersForTasks,
 			Map<Integer, Map<RiskCategory, Double>> currentWorkerErgoRisk,
-			Map<Integer,List<String>>currentSolInvertMap) {// throws
-																			// NoSolutionFoundException{
-		// numCalls++;
-		/*
-		 * if (numCalls > 100 ){ System.out.println("num calls: " + numCalls);
-		 * throw new NoSolutionFoundException(); }
-		 */
+			Map<Integer,List<String>>currentSolInvertMap) {
 
 		if (unassignedTasks.size() == 0){
 			
@@ -267,17 +120,10 @@ public class SolverMinSuggested {
 
 		String tId = unassignedTasks.get(0);
 		
-		
-			
-		// System.out.println("considering task: " + tId);
 		Task t = this.allTasks.get(tId);
 		List<Integer> workerIdsAssigned = currentSol.get(tId); // workers
 																// currently
 																// assigned
-		// int workerReq = t.getWorkerReq();
-		// int numWorkersAssigned = workerIdsAssigned.size();
-		// int moreWorkersReqd = workerReq-numWorkersAssigned; //number of more
-		// workers required in this task
 		
 		
 		// workers who can be assigned to this task
@@ -290,27 +136,17 @@ public class SolverMinSuggested {
 
 		for (int i = 0; i < possibleNumOfWorkers; ++i) {
 			int workerIdToAssign = possibleWorkerIds.get(i);
-			/*if (tId.equals("task57")){
-				System.out.println(workerIdToAssign);
-			}*/
 			
 			List<String> tasksForWorker = currentSolInvertMap.get(workerIdToAssign);
-			
 
 			if (this.isConsistent(currentSol, tId, workerIdToAssign,
 					currentWorkerErgoRisk,currentSolInvertMap)) {
 				
-				
-
 				List<Integer> updatedWorkersAssigned = new ArrayList<Integer>(
 						workerIdsAssigned);
 				updatedWorkersAssigned.add(workerIdToAssign);
 				currentSol.put(tId, updatedWorkersAssigned);
-				/*
-				System.out.println(tId);
-				System.out.println(currentSol);
-				System.out.println(unassignedTasks);
-				*/
+
 				this.addTaskErgoRiskToWorker(currentWorkerErgoRisk, t,
 						workerIdToAssign);
 				
@@ -352,11 +188,6 @@ public class SolverMinSuggested {
 								currentSol);
 						this.currentBestAssignmentTasksRemaining = updatedUnassignedTasks
 								.size();
-						/*
-						System.out.println("found better of tasks left: "
-								+ updatedUnassignedTasks.size());
-						System.out.println("unassigned tasks: " + updatedUnassignedTasks);
-						System.out.println("current best: " + currentBestAssignment);*/
 					}
 					else if (this.workersSpare != null){
 						if (updatedUnassignedTasks.size() == this.currentBestAssignmentTasksRemaining){
@@ -388,43 +219,6 @@ public class SolverMinSuggested {
 		return null;
 	}
 
-	private void addTaskErgoRiskToWorker(
-			Map<Integer, Map<RiskCategory, Double>> currentWorkerErgoRisk,
-			Task t, int workerIdToAssign) {
-		Map<RiskCategory, Double> workerErgoMap = currentWorkerErgoRisk
-				.get(workerIdToAssign);
-		Map<RiskCategory, Double> taskErgoMap = t.getErgoRiskAllCategories();
-		for (RiskCategory c : this.constrainedCategories) {
-			Double wRisk = workerErgoMap.get(c);
-			Double tRisk = taskErgoMap.get(c);
-
-			assert (wRisk != null); // this should have always been initialized
-									// to 0
-			if (tRisk != null) {
-				wRisk += tRisk;
-			}
-		}
-
-	}
-
-	private void removeTaskErgoRiskFromWorker(
-			Map<Integer, Map<RiskCategory, Double>> currentWorkerErgoRisk,
-			Task t, int workerIdToAssign) {
-		Map<RiskCategory, Double> workerErgoMap = currentWorkerErgoRisk
-				.get(workerIdToAssign);
-		Map<RiskCategory, Double> taskErgoMap = t.getErgoRiskAllCategories();
-		for (RiskCategory c : this.constrainedCategories) {
-			Double wRisk = workerErgoMap.get(c);
-			Double tRisk = taskErgoMap.get(c);
-
-			assert (wRisk != null); // this should have always been initialized
-									// to 0
-			if (tRisk != null) {
-				wRisk -= tRisk;
-			}
-		}
-
-	}
 	private Set<Integer> getSpareWorkersInAssignment(Map<String, List<Integer>> currentSol) {
 		
 		Set<Integer> sparesInSol = new HashSet<Integer>();
@@ -438,25 +232,6 @@ public class SolverMinSuggested {
 		}
 		return sparesInSol;
 	}
-	/**
-	 * For a given task, return the possible workers the task can be assigned to
-	 * 
-	 * @param currentSol
-	 * @param possibleWorkersForTasks
-	 * @param t
-	 * @return
-	 */
-	private List<Integer> getWorkerIdsForTask(
-			Map<String, List<Integer>> currentSol, String tId,
-			Map<String, List<Integer>> possibleWorkersForTasks) {
 
-		List<Integer> initiallyPopulated = possibleWorkersForTasks.get(tId);
-		return initiallyPopulated;
-
-	}
-
-	public Map<String, List<Integer>> getCurrentBestAssignment() {
-		return this.currentBestAssignment;
-	}
 
 }

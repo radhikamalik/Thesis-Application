@@ -1,22 +1,21 @@
 package hal.taskscheduler.model;
 
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+/**
+ * Comparator that sorts task on dependencies, priority and also the minimum remaining values (MRV) heuristic
+ * such that tasks with the least remaining possible workers in their domain are assigned first.
+ * @author RadhikaMalik
+ *
+ */
+public class TaskSorterMRVHeuristic extends TaskSorter {
 
-public class TaskSorterMRVHeuristic implements Comparator<String> {
-
-	Map<String, Task> allTasks;
-	List<RiskCategory> constrainedCategory;
-	Map<String, List<Integer>> possibleWorkersForTasks;
 
 	public TaskSorterMRVHeuristic(Map<String, Task> allTasks,
-			List<RiskCategory> constrainedCategory, Map<String, List<Integer>> possibleWorkersForTasks) {
-		
-		this.allTasks = allTasks;
-		this.constrainedCategory = constrainedCategory;
-		this.possibleWorkersForTasks = possibleWorkersForTasks;
+			List<RiskCategory> constrainedCategory,
+			Map<String, List<Integer>> possibleWorkersForTasks) {
+		super(allTasks, constrainedCategory, possibleWorkersForTasks);
 	}
 
 	@Override
