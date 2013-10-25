@@ -10,3 +10,7 @@ a shift.
 There are 2 main components in this project--
 - A scheduler that solves a constraint satisfaction problem using backtracking search (contained in the package src/hal/taskscheduler/model/)
 - An interface prototype for an Android 10" tablet. The interface is structured according by functionality: the main activity (MainActivity.java) is in folder src/hal/taskscheduler, all screen dialog windows are in the folder src/hal/taskscheduler/dialogs and all component listeners are in the src/hal/taskscheduler/listeners folder.
+
+Dummy data was generated to demo this application and can be found in the assets/ folder.
+
+The application currently does not have a persistent store and hence data does not persist between application sessions.
