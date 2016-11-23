@@ -1,7 +1,7 @@
 Thesis-Application
 ==================
 This project includes a part of the the application developed for my M.Eng thesis. 
-Detailed description here: http://web.mit.edu/aeroastro/labs/halab/papers/Thesis-Radhika.pdf
+Detailed description here: https://hal.pratt.duke.edu/sites/hal.pratt.duke.edu/files/u13/DECISION%20SUPPORT%20TOOL%20FOR%20DYNAMIC%20WORKFORCE%20SCHEDULING%20IN%20MANUFACTURING%20ENVIRONMENTS.pdf
 
 The overall goal for this project was to develop an application for Boeing to use in their assembly line to track tasks 
 accomplished during a shift in their manufacturing operations and re-plan tasks when worker availabilities change during
